@@ -2,7 +2,7 @@ from services.fetch_countries import fetch_countries_datas
 from services.store_countries_to_db import store_countries_in_db
 
 
-def task1():
+def task():
     countries = fetch_countries_datas()
     if countries:
         store_countries_in_db(countries)
@@ -11,4 +11,4 @@ def task1():
 
 
 if __name__ == "__main__":
-    task1()
+    task()
