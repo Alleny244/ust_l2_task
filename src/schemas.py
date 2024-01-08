@@ -100,7 +100,6 @@ class Query(ObjectType):
         nearby_countries = [
             CountryListType(
                 name=country,
-                independent=False,  # You might need to set this based on your data
             )
             for country, _ in sorted_distances
         ]
