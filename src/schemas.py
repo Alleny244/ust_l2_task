@@ -1,4 +1,14 @@
-from graphene import ObjectType, String, Int, Boolean, List, Field, Float
+from graphene import (
+    ObjectType,
+    String,
+    Int,
+    Boolean,
+    List,
+    Field,
+    Float,
+    Mutation,
+    InputObjectType,
+)
 from graphene_mongo import MongoengineObjectType
 from geopy.distance import geodesic
 from bson import ObjectId
@@ -25,6 +35,31 @@ class CountryListType(MongoengineObjectType):
     region = String()
     capital = List(String)
     languages = List(LanguageType)
+    coordinates = List(Int)
+    area = Int()
+    population = Int()
+    continents = List(String)
+
+
+class CurrencyInputType(InputObjectType):
+    name = String()
+    code = String()
+
+
+class LanguageInputType(InputObjectType):
+    name = String()
+
+
+class CountryListInputType(InputObjectType):
+    class Meta:
+        model = CountryList
+
+    name = String()
+    independent = Boolean()
+    currencies = List(CurrencyInputType)
+    region = String()
+    capital = List(String)
+    languages = List(LanguageInputType)
     coordinates = List(Int)
     area = Int()
     population = Int()
@@ -70,3 +105,20 @@ class Query(ObjectType):
             for country, _ in sorted_distances
         ]
         return nearby_countries
+
+
+class AddCounrtyMutations(Mutation):
+    country = Field(lambda: CountryListType)
+
+    class Arguments:
+        input_data = CountryListInputType(required=True)
+
+    @staticmethod
+    def mutate(root, info, input_data=None):
+        new_country = CountryList(**input_data)
+        new_country.save()
+        return AddCounrtyMutations(country=new_country)
+
+
+class Mutations(ObjectType):
+    addCountryMutation = AddCounrtyMutations.Field()
